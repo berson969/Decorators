@@ -6,27 +6,30 @@ import re
 from decor_logger import decor_logging
 
 # KEYWORDS = ['биткоин', 'Транзакции', 'слайдер']
-KEYWORDS = ['API', 'фото', 'размер' 'биткоин','Транзакции', 'python', 'образ', 'все', 'БПФ']
+KEYWORDS = ['API', 'фото', 'размер' 'биткоин', 'Транзакции', 'python', 'образ', 'все', 'БПФ']
 KEYWORDS_SET = set(KEYWORDS)
 HEADERS = Headers(browser='chrome', os="mac", headers=True).generate()
 url = 'https://habr.com/ru/all/'
 PATTERN = '[^A-Za-zА-Яа-яё\ ]'
+path_log1 = 'logs/logs1.log'
+path_log2 = 'logs/logs2.log'
 
 
-@decor_logging
+
+@decor_logging(path_log2)
 def find_href(article):
     href = article.find(class_="tm-article-snippet__title-link").attrs['href']
     return f"https://habr.com{href}"
 
 
-@decor_logging
+@decor_logging(path_log1)
 def check_and_print(title, text_for_check, article):
     text_for_check1 = re.sub(PATTERN, ' ', text_for_check)
     # print()
     if set(text_for_check1.split(sep=' ')).isdisjoint(KEYWORDS_SET) is False:
-        date_realese = article.find(class_="tm-article-snippet__datetime-published").find('time').attrs['datetime']
-        date_realese = datetime.strptime(date_realese, '%Y-%m-%dT%H:%M:%S.%fZ')
-        print(f'СТАТЬЯ => {date_realese.date()}  {title.text}   {find_href(article)}')
+        date_release = article.find(class_="tm-article-snippet__datetime-published").find('time').attrs['datetime']
+        date_release = datetime.strptime(date_release, '%Y-%m-%dT%H:%M:%S.%fZ')
+        print(f'СТАТЬЯ => {date_release.date()}  {title.text}   {find_href(article)}')
         return True
 
 

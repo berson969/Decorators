@@ -1,33 +1,26 @@
 import logging
+from logging import Logger
 from functools import wraps
 
-# WRAPPER_ASSIGNMENTS = ('__module__', '__name__', '__doc__')
-# WRAPPER_UPDATES = ('__dict__',)
 
+def decor_logging(path_log):
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-fileHandler = logging.FileHandler('logs/logs.log')
-fileHandler.setFormatter(logging.Formatter(fmt='%(asctime)s: %(message)s')) # attrbs LogRecord
-logger.addHandler(fileHandler)
+    def _logging(func):
 
-# streamHandler = logging.StreamHandler()
-# streamHandler.setFormatter(logging.Formatter(fmt='%(asctime)s: %(message)s')) # attrbs LogRecord
-# logger.addHandler(streamHandler)
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            logger = logging.getLogger(__name__)
+            logger.setLevel(logging.INFO)
+            fileHandler = logging.FileHandler(path_log)
+            fileHandler.setFormatter(logging.Formatter(fmt='%(asctime)s: %(message)s'))
+            logger.addHandler(fileHandler)
+            result = func(*args, **kwargs)
+            title = str(args[0]).strip("<span>")[:90]
+            msg = f'FuncName: {func.__name__}: Result {result} =>> Title {title}'
+            logger.info(msg)
+            # fileHandler.close()
+            return result
 
+        return wrapper
 
-def decor_logging(func):
-    
-    @wraps(func) #, assigned = WRAPPER_ASSIGNMENTS, updates=WRAPPER_UPDATES)
-    def wrapper(*args, **kwargs):
-        result = func(*args, **kwargs)
-        # logger.info(f'Function name: {func.__name__}')
-        # logger.info(f'Check2 {func.__doc__}')
-        # logger.info(f'Check3 {func.__dict__}')
-        # logger.info(f'Launch module {func.__module__}')
-        logger.info(f'Log: {fileHandler.baseFilename[-14::1]} FuncName: {func.__name__}: Result {result} Title {str(args[0])[:90]}')
-        # logger.info(f'Title {str(args[0])[:90]}')
-        # logger.info(f'Logfile name {fileHandler.baseFilename[-14::1]}')
-        return result
-
-    return wrapper
+    return _logging

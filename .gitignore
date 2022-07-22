@@ -1,4 +1,9 @@
 venv/
 .env/
-/logs.log
+*/logs.log
+requirements.txt
+decor_logger1.py
+ __pycache__/
+ logs/logs1.log
+ logs/logs2.log
 
